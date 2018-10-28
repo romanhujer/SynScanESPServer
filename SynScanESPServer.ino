@@ -57,9 +57,6 @@
 #include "Config.h"
 #include "Constants.h"
 #include "Encoders.h"
-#ifdef ENCODERS_ON
-Encoders encoders;
-#endif
 
 #include "MountStatus.h"
 
@@ -76,21 +73,21 @@ bool stationDhcpEnabled=true;
 char wifi_sta_ssid[40]="";
 char wifi_sta_pwd[40]="";
 
-IPAddress wifi_sta_ip = IPAddress(192,168,0,1);
-IPAddress wifi_sta_gw = IPAddress(192,168,0,1);
+IPAddress wifi_sta_ip = IPAddress(192,168,10,1);
+IPAddress wifi_sta_gw = IPAddress(192,168,10,1);
 IPAddress wifi_sta_sn = IPAddress(255,255,255,0);
 
-char wifi_ap_ssid[40]="ONSTEP";
-char wifi_ap_pwd[40]="password";
+char wifi_ap_ssid[40]="SynScan";
+char wifi_ap_pwd[40]="SynScan";
 byte wifi_ap_ch=7;
 
-IPAddress wifi_ap_ip = IPAddress(192,168,0,1);
-IPAddress wifi_ap_gw = IPAddress(192,168,0,1);
+IPAddress wifi_ap_ip = IPAddress(192,168,10,1);
+IPAddress wifi_ap_gw = IPAddress(192,168,10,1);
 IPAddress wifi_ap_sn = IPAddress(255,255,255,0);
 
 ESP8266WebServer server(80);
 
-WiFiServer cmdSvr(9999);
+WiFiServer cmdSvr(11880);
 WiFiClient cmdSvrClient;
 
 void handleNotFound(){
@@ -127,11 +124,6 @@ void setup(void){
     EEPROM_writeInt(10,(int)WebTimeout);
     EEPROM_writeInt(12,(int)CmdTimeout);
 
-#ifdef ENCODERS_ON
-    EEPROM_writeLong(600,Axis1EncDiffLimit);
-    EEPROM_writeLong(604,Axis2EncDiffLimit);
-#endif
-
     EEPROM_writeString(100,wifi_sta_ssid);
     EEPROM_writeString(150,wifi_sta_pwd);
     EEPROM_writeString(200,masterPassword);
@@ -153,11 +145,6 @@ void setup(void){
 
     WebTimeout=EEPROM_readInt(10);
     CmdTimeout=EEPROM_readInt(12);
-
-#ifdef ENCODERS_ON
-    Axis1EncDiffLimit=EEPROM_readLong(600);
-    Axis2EncDiffLimit=EEPROM_readLong(604);
-#endif
 
     EEPROM_readString(100,wifi_sta_ssid);
     EEPROM_readString(150,wifi_sta_pwd);
@@ -243,7 +230,7 @@ Again:
     }
   }
 #else
-  Ser.begin(115200);
+  Ser.begin(SERIAL_BAUD);
   delay(10000);
   
   Ser.println(accessPointEnabled);
