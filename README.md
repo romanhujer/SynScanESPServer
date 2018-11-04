@@ -20,7 +20,7 @@ Wireless control SynScan EQ mount   (example SkyWatcher EQ6 Pro, HEQ5 ...) in Sk
 
 ## Advance version:
 
-* MyFocuserV1.0	  -  Satus/config WWW Server (now in progress)
+*  SynScanESPv1_0  -  Satus/config WWW Server (now in progress)
 
 
 ## NOTE:
