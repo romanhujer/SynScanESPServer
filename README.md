@@ -20,7 +20,7 @@ Wireless control SynScan EQ mount   (example SkyWatcher EQ6 Pro, HEQ5 ...) in Sk
 
 * MyFocuserV1.0	  -  Satus/config WWW Server (now in progress)
 
-##NOTE:
+## NOTE:
 
 For an ESP8266 ESP-01 module use the wiring as shown in numerous places on the internet to get the module in firmware upload mode. To send the firmware I use the Arduino IDE with the add-on for the ESP8266. To get this setup...
 
