@@ -1,10 +1,10 @@
-// Setup.h
-// Hardware specific config for MyFocuser
-//
-// Copyright (c) 2018 Roman Hujer   http://hujer.net
-//
-//
-//
+/*  Setup.h
+    Hardware specific config for MyFocuser
+
+    Copyright (c) 2018 Roman Hujer   http://hujer.net
+
+
+*/
 
 
 #define UART_BAUD 9600

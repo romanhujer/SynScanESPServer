@@ -1,5 +1,5 @@
 /* 
-   SynScanESPServer.ino
+   SynScanESPx1_0.ino
 
    SynScan ESP Server
 
@@ -34,20 +34,40 @@ const int port = tcp_port;
 
 
 #include <ESP8266WiFi.h>
-
-
 #include <WiFiClient.h>
+
+
 
 
 WiFiServer server(port);
 WiFiClient client;
-
 
 uint8_t buf1[bufferSize];
 uint8_t i1=0;
 
 uint8_t buf2[bufferSize];
 uint8_t i2=0;
+
+
+#ifdef MODE_AP
+// For AP mode:
+
+const char *ssid =  MY_SSID;
+const char *pw =   MY_PASS; 
+
+IPAddress ip(192, 168, 4, 1); 
+IPAddress netmask(255, 255, 255, 0);
+
+#endif
+
+
+#ifdef MODE_STA
+// For STATION mode:
+const char *ssid = MY_SSID;  
+const char *pw = MY_PASS; 
+
+#endif
+
 
 
 
@@ -58,7 +78,7 @@ void setup() {
   Serial.begin(UART_BAUD);
 
   #ifdef MODE_AP 
-  //AP mode (phone connects directly to ESP) (no router)
+
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(ip, ip, netmask); // configure ip address for softAP 
   WiFi.softAP(ssid, pw); // configure ssid and password for softAP
@@ -67,8 +87,8 @@ void setup() {
   
   #ifdef MODE_STA
   // STATION mode (ESP connects to router and gets an IP)
-  // Assuming phone is also connected to that router
-  // from RoboRemo you must connect to the IP of the ESP
+
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pw);
   while (WiFi.status() != WL_CONNECTED) {
@@ -76,7 +96,7 @@ void setup() {
   }
   #endif
 
-  Serial.println("Starting TCP Server");
+  Serial.println("K1");  // SynScan ECHO
   server.begin(); // start TCP server 
 
 }
@@ -92,7 +112,7 @@ void loop() {
 
   if(client.available()) {
     while(client.available()) {
-      buf1[i1] = (uint8_t)client.read(); // read char from client (RoboRemo app)
+      buf1[i1] = (uint8_t)client.read(); 
       if(i1<bufferSize-1) i1++;
     }
     // now send to UART:

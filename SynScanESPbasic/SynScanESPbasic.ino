@@ -32,14 +32,11 @@
 
 const int port = tcp_port; 
 
-
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 
-
 WiFiServer server(port);
 WiFiClient client;
-
 
 uint8_t buf1[bufferSize];
 uint8_t i1=0;
@@ -55,7 +52,6 @@ IPAddress ip(192, 168, 4, 1);
 IPAddress netmask(255, 255, 255, 0);
 
 
-
 void setup() {
 
   delay(500);
@@ -67,8 +63,7 @@ void setup() {
   WiFi.softAP(ssid, pw);
   
 
-  
-  Serial.println("K1");
+  Serial.println("K1");  //SynScan ECHO
   server.begin(); // start TCP server 
 
 }
