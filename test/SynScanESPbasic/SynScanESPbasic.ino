@@ -1,7 +1,7 @@
 /* 
-   SynScanESPx1_0.ino
+   SynScanESPBasic.ino
 
-   SynScan ESP Server
+   SynScan ESP Server basic version
 
    Copyright (c) 2018 Roman Hujer   http://hujer.net
 
@@ -32,15 +32,19 @@
 
 const int port = tcp_port; 
 
-
+#ifdef ESP32
+#include <WiFi.h>
+#else
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+#endif
+#include <algorithm> // std::min
 
-
-
+#define MAX_SRV_CLIENTS 3
 
 WiFiServer server(port);
-WiFiClient client;
+WiFiClient serverClient[MAX_SRV_CLIENTS];
+
 
 uint8_t buf1[bufferSize];
 uint8_t i1=0;
@@ -48,32 +52,12 @@ uint8_t i1=0;
 uint8_t buf2[bufferSize];
 uint8_t i2=0;
 
-
-#ifdef MODE_AP
 // For AP mode:
+const char *ssid = MY_SSID;  
+const char *pw = MY_PASS; 
 
-const char *ssid =  MY_SSID;
-const char *pw =   MY_PASS; 
-
-IPAddress ip(10, 0, 0, 1); 
+IPAddress ip(192, 168, 4, 1); 
 IPAddress netmask(255, 255, 255, 0);
-
-#endif
-
-
-#ifdef MODE_STA
-// For STATION mode:
-const char *ssid_c = MY_C_SSID;  
-const char *pw_c = MY_C_PASS; 
-
-IPAddress wifi_sta_ip = IPAddress(10,0,0,10);
-IPAddress wifi_sta_gw = IPAddress(10,0,0,1);
-IPAddress wifi_sta_sn = IPAddress(255,255,255,0);
-
-
-#endif
-
-
 
 
 void setup() {
@@ -81,60 +65,47 @@ void setup() {
   delay(500);
   
   Serial.begin(UART_BAUD);
-
-  #ifdef MODE_AP 
+  Serial.setRxBufferSize(RXBUFFERSIZE);
 
   WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(ip, ip, netmask); // configure ip address for softAP 
-  WiFi.softAP(ssid, pw); // configure ssid and password for softAP
-  #endif
-
+  WiFi.softAPConfig(ip, ip, netmask); 
+  WiFi.softAP(ssid, pw);
   
-  #ifdef MODE_STA
-  // STATION mode (ESP connects to router and gets an IP)
 
-
-  WiFi.mode(WIFI_STA);
-  WiFi.config(wifi_sta_ip, wifi_sta_gw, wifi_sta_sn);
-  WiFi.begin(ssid_c, pw_c);
-  while (WiFi.status() != WL_CONNECTED) {
-  #ifdef DEBUG_ON
-    Serial.println(".");
-  #endif
-    delay(100);
-    }
-  #endif
-  #ifdef DEBUG_ON
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-  #endif
-
-  Serial.println("Kx");  // SynScan ECHO
+  Serial.println("Ready...K1");  //SynScan ECHO
   server.begin(); // start TCP server 
-  
+
 }
 
 void loop() {
 
-  if(!client.connected()) { // if client not connected
-    client = server.available(); // wait for it to connect
-    return;
+//check if there are any new clients
+  if (server.hasClient()) {
+    //find free/disconnected spot
+    int i;
+    for (i = 0; i < MAX_SRV_CLIENTS; i++)
+      if (!serverClient[i]) { // equivalent to !serverClient[i].connected()
+        serverClient[i] = server.available();
+        break;
+      }
+
+  if (i == MAX_SRV_CLIENTS) {
+      server.available().println("busy");
+     }
   }
 
-  // here we have a connected client
 
-  if(client.available()) {
-    while(client.available()) {
-      buf1[i1] = (uint8_t)client.read(); 
-      if(i1<bufferSize-1) i1++;
+
+  // here we have a connected serverClient
+
+  for (int i = 0; i < MAX_SRV_CLIENTS; i++)
+    while (serverClient[i].available() && Serial.availableForWrite() > 0) {
+       buf1[i1] = (uint8_t)serverClient[i].read(); // read char from serverClient 
+       if(i1<bufferSize-1) i1++;
     }
-    // now send to UART:
     Serial.write(buf1, i1);
     i1 = 0;
-  }
-
+  
   if(Serial.available()) {
 
     // read the data until pause:
@@ -153,7 +124,9 @@ void loop() {
     }
     
     // now send to WiFi:
-    client.write((char*)buf2, i2);
+    for (int i = 0; i < MAX_SRV_CLIENTS; i++) {
+    serverClient[i].write((char*)buf2, i2);
+    }
     i2 = 0;
   }
   

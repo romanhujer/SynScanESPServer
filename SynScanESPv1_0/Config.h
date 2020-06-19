@@ -5,11 +5,15 @@
 
 */
 
+#define DEBUG_OFF
 
-//#define MODE_AP // phone connects directly to ESP
-
-#define MODE_STA // ESP connects to WiFi router
-
+#define MODE_AP // phone connects directly to ESP
 
 #define MY_SSID "SynScan"  
 #define MY_PASS "SynScanESP"
+
+
+#define MODE_STA_OFF // ESP connects to WiFi router
+
+#define MY_C_SSID "ASIAirHR"  
+#define MY_C_PASS "12345678"

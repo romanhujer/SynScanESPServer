@@ -9,5 +9,5 @@
 
 
 
-#define MY_SSID "SynScanHR"  
-#define MY_PASS "12345678"
+#define MY_SSID "SynScan"  
+#define MY_PASS "SynScanESP"
