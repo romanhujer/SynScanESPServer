@@ -12,10 +12,10 @@ Wireless control SynScan EQ mount   (example SkyWatcher EQ6 Pro, HEQ5 ...) in Sk
 
 *  SynScanESPbasic  -  Only WiFi AP mode and Uart bridge 
 <pre>
-	SSID:  SynScan
-	Pass:  SynScanESP
+	SSID:  SynScanHR
+	Pass:  12345678
 	IP:  192.168.4.1
-	TcpPort: 11880 
+	TcpPort: 4030
 </pre>
 
 ## Advance version:
