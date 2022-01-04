@@ -10,7 +10,7 @@
 #define MODE_AP // phone connects directly to ESP
 
 #define MY_SSID "SynScan"  
-#define MY_PASS "SynScanESP"
+#define MY_PASS "12345678"
 
 
 #define MODE_STA_OFF // ESP connects to WiFi router
